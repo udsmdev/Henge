@@ -2,12 +2,12 @@ name: Henge
 options:
   bundleIdPrefix: com.henge
   deploymentTarget:
-    iOS: "17.0"
+    iOS: "16.0"
   createIntermediateGroups: true
 
 settings:
   base:
-    # The app and its JIT helper follow this together (the helper's id sits under the app's).
+    # The app targets iOS 16; the optional built-in JIT helper has its own iOS 26 target below.
     HENGE_BUNDLE_IDENTIFIER: com.henge.app
     # The app's entitlements file. Override on the xcodebuild command line (the JIT helper doesn't use it, so a
     # personal team can sign the app with fewer entitlements without touching the helper).
@@ -40,7 +40,7 @@ targets:
         type: file
         buildPhase: resources
       # The messages the app and its JIT helper exchange.
-      - path: HengeJITHelper/HengeJITMessages.swift
+      - HengeJITHelper/HengeJITMessages.swift
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: $(HENGE_BUNDLE_IDENTIFIER)
@@ -103,7 +103,7 @@ targets:
           - "-framework"
           - "UniformTypeIdentifiers"
     dependencies:
-      # Built-in StikJIT's debugger process. Embedded into PlugIns/.
+      # Built-in StikJIT's debugger process. Embedded into PlugIns/; only supported on iOS 26+.
       - target: HengeJITHelper
     preBuildScripts:
       - name: Build the engine
@@ -177,3 +177,4 @@ targets:
       # StikJIT 1.9.0 (MPL-2.0, with idevice under MIT), unmodified; embedded by the app's Embed StikJIT.
       - framework: deps/StikJIT.xcframework
         embed: false
+

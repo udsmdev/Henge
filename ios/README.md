@@ -1,6 +1,6 @@
 # Henge for iOS
 
-The Henge app on HengeVM's engine. Build: `ios/scripts/package_ipa.sh` (writes
+The Henge app on HengeVM's engine. The minimum install target is **iOS 16.0**; the built-in JIT helper is a separate iOS 26+ feature. Build: `ios/scripts/package_ipa.sh` (writes
 `~/Desktop/Henge.ipa`; `--trollstore` writes `Henge.tipa`, for TrollStore and
 TrollStore Lite, without the entitlements TrollStore bans). Needs Xcode 27 or later, xcodegen,
 and the prebuilt pieces
@@ -17,7 +17,8 @@ the packager as an environment variable (`HENGE_ENTITLEMENTS=... ios/scripts/pac
   jailbreak, or the built-in StikJIT helper (`HengeJITHelper.appex`, with
   on-device pairing on iOS 27). The app claims one 1 GB region per launch
   (`JITBootstrap.jitBytes`) and the engine writes through a `vm_remap`'d alias
-  (`host/jit_region.c`, split mode).
+  (`host/jit_region.c`, split mode). On iOS 16–25, use StikDebug, TrollStore,
+  or a jailbreak for JIT; the built-in helper is unavailable.
 - **Memory**: `increased-memory-limit` is recommended, not required. Once a
   debugger has attached, guest RAM is kept out of the app's memory limit, and if
   iOS refuses that it comes from a file on free storage instead.
@@ -31,7 +32,7 @@ the packager as an environment variable (`HENGE_ENTITLEMENTS=... ios/scripts/pac
 - **Display**: iOS has no ParavirtualizedGraphics framework, so Henge replays the
   guest's GPU commands with Metal (`devices/pvg_lite.c`, `devices/pvg_metal.m`).
 - **External display**: on iOS 27, `SessionView` registers a SwiftUI
-  `ExternalNonInteractiveAccessory` during a Mac session. On iOS 17–26 iOS offers
+  `ExternalNonInteractiveAccessory` during a Mac session. On iOS 16–26 iOS offers
   the display scene to the app delegate instead (`HengeAppDelegate`), and
   `LegacyExternalDisplay` shows the session there as `ExternalScreenPlan` decides;
   outside a session the display mirrors the phone. `DisplayRouter` selects
@@ -46,7 +47,7 @@ the packager as an environment variable (`HENGE_ENTITLEMENTS=... ios/scripts/pac
   app Swift sources and the iOS/macOS renderer without linking external libraries.
   USB-C video is user-confirmed on an iPhone 17 Pro running iOS 27 with
   development build 0.1/2; activation is automatic during a Mac session. The
-  iOS 17–26 path compiles and its plan is tested, but has not run on hardware yet.
+  legacy path compiles and its plan is tested, but has not run on hardware yet.
   Remaining acceptance checks: connect before/during boot, unplug/replug with an
   idle desktop, rotate the phone, use keyboard/mouse through the dock, and end
   the session while connected. These individual lifecycle cases, other devices
